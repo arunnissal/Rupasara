@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-*r=lkck=b7b#j_&6w#8=41j830+*a1haq)30+0wuvv$e*3uwg=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+ALLOWED_HOSTS = ["localhost","127.0.0.1",".onrender.com"]
 
 
 # Application definition
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -115,12 +117,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-ALLOWED_HOSTS = ["arunnissal.pythonanywhere.com"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-PEXELS_API_KEY = "a9xrBjC2MDMndwcn2Sxr07Ix0v0xsEuGtREkIUd0GHXorrHYRP0kCBTa"
-# AI image generation (e.g., Stability AI)
-STABILITY_API_KEY = "sk-MxMqfZogG2vmq5gWxs8dMQoK4FGazoLH4c9niTb1UsByxVCQ"
+
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "a9xrBjC2MDMndwcn2Sxr07Ix0v0xsEuGtREkIUd0GHXorrHYRP0kCBTa")
+STABILITY_API_KEY = os.environ.get("STABILITY_API_KEY", "sk-MxMqfZogG2vmq5gWxs8dMQoK4FGazoLH4c9niTb1UsByxVCQ")
