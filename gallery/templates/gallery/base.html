@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rupasara | Explore the Visual Universe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{% static 'gallery/css/styles.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="{% url 'home' %}" class="brand">RUPASARA</a>
+
+        <div class="header-actions">
+            <a href="{% url 'ai_studio' %}" class="chip-small ai-link">✨ AI Studio</a>
+            <a href="{% url 'favorites' %}" class="chip-small fav-link">❤️ Favorites</a>
+            <button id="theme-toggle" class="theme-toggle" type="button">
+                🌙
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="site-footer">
+    Rupasara – Explore the Visual Universe · A free image search experience
+</footer>
+
+<!-- Main JavaScript -->
+<script src="{% static 'gallery/js/main.js' %}"></script>
+{% block extra_scripts %}{% endblock %}
+
+</body>
+</html>

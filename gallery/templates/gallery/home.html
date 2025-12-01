@@ -1,0 +1,57 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+<div class="hero">
+    <h1 class="hero-title">
+        ✨ Rupasara
+    </h1>
+    <p class="hero-subtitle">
+        Explore the Visual Universe – Search • View • Download
+    </p>
+
+    <p class="hero-helper">
+        Start by searching for anything – like <i>sunset</i>, <i>mountains</i>, or <i>city night</i>.
+    </p>
+
+    <!-- 🔍 Search Form -->
+    <form action="{% url 'search' %}" method="get" class="search-form">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search images..."
+            required
+            class="search-input"
+        >
+        <button type="submit" class="btn btn-primary">
+            Search
+        </button>
+    </form>
+
+    <p class="hint-text">
+        (Image search and download are powered by Pexels.)
+    </p>
+
+    <!-- ⭐ Quick Categories -->
+    <div class="section">
+        <p class="section-title">
+            Try popular categories:
+        </p>
+        <div class="chip-row chip-row-center">
+            <a href="{% url 'search' %}?q=Nature" class="chip">🌿 Nature</a>
+            <a href="{% url 'search' %}?q=Animals" class="chip">🐾 Animals</a>
+            <a href="{% url 'search' %}?q=Technology" class="chip">💻 Technology</a>
+            <a href="{% url 'search' %}?q=Cars" class="chip">🚗 Cars</a>
+            <a href="{% url 'search' %}?q=People" class="chip">🧑 People</a>
+            <a href="{% url 'search' %}?q=Food" class="chip">🍕 Food</a>
+            <a href="{% url 'search' %}?q=Space" class="chip">🌌 Space</a>
+            <a href="{% url 'search' %}?q=Abstract" class="chip">🎨 Abstract</a>
+            <a href="{% url 'search' %}?q=Anime art" class="chip">🎎 Anime</a>
+        </div>
+    </div>
+
+    <!-- 🕘 Recent searches (JS will fill) -->
+    <div id="recent-searches-home" class="recent-searches"></div>
+</div>
+
+{% endblock %}

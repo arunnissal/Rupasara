@@ -1,0 +1,106 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">
+    🔍 Search Results
+</h1>
+
+{% if query %}
+<p class="search-info">
+    You searched for: <strong>{{ query }}</strong>
+    {% if page and page > 1 %}
+    <span class="search-page-info">(Page {{ page }})</span>
+    {% endif %}
+</p>
+
+<!-- ⭐ Quick Categories bar -->
+<div class="section-compact">
+    <div class="chip-row">
+        <a href="{% url 'search' %}?q=Nature" class="chip-small">🌿 Nature</a>
+        <a href="{% url 'search' %}?q=Animals" class="chip-small">🐾 Animals</a>
+        <a href="{% url 'search' %}?q=Technology" class="chip-small">💻 Technology</a>
+        <a href="{% url 'search' %}?q=Cars" class="chip-small">🚗 Cars</a>
+        <a href="{% url 'search' %}?q=People" class="chip-small">🧑 People</a>
+        <a href="{% url 'search' %}?q=Food" class="chip-small">🍕 Food</a>
+        <a href="{% url 'search' %}?q=Space" class="chip-small">🌌 Space</a>
+        <a href="{% url 'search' %}?q=Abstract" class="chip-small">🎨 Abstract</a>
+        <a href="{% url 'search' %}?q=Anime art" class="chip-small">🎎 Anime</a>
+    </div>
+</div>
+
+<!-- 🕘 Recent searches (JS fills) -->
+<div id="recent-searches-results" class="recent-searches" data-query="{{ query|escapejs }}"></div>
+
+{% if error_message %}
+<div class="alert alert-error">
+    {{ error_message }}
+</div>
+
+{% else %}
+
+{% if images %}
+<div class="image-grid">
+    {% for img in images %}
+    <div class="image-card">
+        <a href="{{ img.full_url }}" target="_blank" class="image-link">
+            <img src="{{ img.thumb_url }}" alt="Image result" class="image-thumb">
+        </a>
+        <div class="image-meta">
+            <div class="image-photographer">
+                Photo by
+                {% if img.photographer_url %}
+                <a href="{{ img.photographer_url }}" target="_blank" class="link-accent">
+                    {{ img.photographer }}
+                </a>
+                {% else %}
+                {{ img.photographer }}
+                {% endif %}
+            </div>
+            <div class="image-actions">
+                <button class="fav-btn" data-thumb="{{ img.thumb_url }}" data-full="{{ img.full_url }}">
+                    🤍
+                </button>
+
+                <a href="{{ img.full_url }}" target="_blank" download class="btn btn-primary btn-small">Download</a>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 🔁 Pagination controls -->
+{% if has_prev or has_next %}
+<div class="pagination">
+    {% if has_prev %}
+    <a href="?q={{ query }}&page={{ prev_page }}" class="btn btn-secondary">
+        ⬅ Previous
+    </a>
+    {% endif %}
+
+    {% if has_next %}
+    <a href="?q={{ query }}&page={{ next_page }}" class="btn btn-primary">
+        Next ➡
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="no-results">
+    No images found for this search. Try a different keyword like
+    <code>nature</code>, <code>city</code>, or <code>ocean</code>.
+</p>
+{% endif %}
+
+{% endif %}
+
+{% else %}
+<p class="search-info">
+    No search query provided. Go back to the
+    <a href="{% url 'home' %}" class="link-accent">home page</a> and try again.
+</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">❤️ Favorites</h1>
+
+<div class="favorites-header">
+    <p class="search-info">
+        Images you marked as favorite will appear here.
+    </p>
+    <button type="button" class="btn btn-secondary btn-small" id="clear-favorites-btn">
+        🗑 Clear all
+    </button>
+</div>
+
+<div id="favorites-container" class="image-grid"></div>
+
+<p id="empty-fav-message" class="no-results" style="display:none;">
+    No favorites yet. Go search and save some images! ✨
+</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("favorites-container");
+    const message = document.getElementById("empty-fav-message");
+    const clearBtn = document.getElementById("clear-favorites-btn");
+
+    function loadFavorites() {
+        let favorites;
+        try {
+            favorites = JSON.parse(localStorage.getItem("rupasara_favorites") || "[]");
+            if (!Array.isArray(favorites)) favorites = [];
+        } catch (e) {
+            favorites = [];
+        }
+        return favorites;
+    }
+
+    function renderFavorites() {
+        const favorites = loadFavorites();
+        container.innerHTML = "";
+
+        if (!favorites.length) {
+            message.style.display = "block";
+            clearBtn.style.display = "none";
+            return;
+        }
+
+        message.style.display = "none";
+        clearBtn.style.display = "inline-flex";
+
+        favorites.forEach(img => {
+            container.innerHTML += `
+                <div class="image-card">
+                    <a href="${img.full}" target="_blank" class="image-link">
+                        <img src="${img.thumb}" class="image-thumb">
+                    </a>
+                    <div class="image-meta">
+                        <div class="image-photographer">
+                            Saved image
+                        </div>
+                        <div class="image-actions">
+                            <a href="${img.full}" download class="btn btn-primary btn-small">Download</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    renderFavorites();
+
+    clearBtn.addEventListener("click", () => {
+        if (!confirm("Clear all favorites?")) return;
+        try {
+            localStorage.removeItem("rupasara_favorites");
+        } catch (e) {
+            // ignore
+        }
+        renderFavorites();
+    });
+});
+</script>
+{% endblock %}

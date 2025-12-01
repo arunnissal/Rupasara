@@ -1,0 +1,70 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">✨ AI Studio</h1>
+
+<p class="search-info">
+    Generate a custom image from a text prompt using Stability AI.
+</p>
+
+<form method="post" class="ai-form" id="ai-form">
+    {% csrf_token %}
+    <textarea
+        name="prompt"
+        rows="3"
+        class="ai-textarea"
+        placeholder="Example: sunset over an ancient temple in anime style"
+    >{{ prompt }}</textarea>
+
+    <div class="ai-actions">
+        <button type="submit" class="btn btn-primary" id="ai-generate-btn">
+            <span class="btn-label">Generate Image</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+        <span class="hint-text" id="ai-status-text">
+            First generation may take a few seconds depending on API speed.
+        </span>
+    </div>
+</form>
+
+{% if error_message %}
+    <div class="alert alert-error" style="margin-top:18px;">
+        {{ error_message }}
+    </div>
+{% endif %}
+
+{% if generated_image_data %}
+    <div class="section" style="margin-top:24px;">
+        <p class="section-title">Result</p>
+        <div class="ai-result">
+            <img src="{{ generated_image_data }}" alt="Generated image" class="ai-image">
+            <div class="ai-result-actions">
+                <a href="{{ generated_image_data }}" download="rupasara-ai.png" class="btn btn-primary btn-small">
+                    Download
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("ai-form");
+    const btn = document.getElementById("ai-generate-btn");
+    const statusText = document.getElementById("ai-status-text");
+
+    if (!form || !btn || !statusText) return;
+
+    form.addEventListener("submit", function () {
+        // show loading state until server responds (page reloads)
+        form.classList.add("ai-form-busy");
+        btn.disabled = true;
+        statusText.textContent = "Generating image… Please wait.";
+    });
+});
+</script>
+{% endblock %}
