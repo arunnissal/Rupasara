@@ -120,7 +120,8 @@ def _generate_with_stability(prompt: str):
         except Exception:
             detail = ""
 
-        return None, f"Stability AI error (status {resp.status_code}). {detail}".strip()
+        return None, "Stability AI free endpoint no longer available. Please use FLUX instead."
+
 
     except requests.RequestException:
         return None, "Unable to reach Stability AI. Please try again."
@@ -194,7 +195,7 @@ def ai_studio(request):
     generated_image_data = None
     error_message = None
     prompt = ""
-    provider = "stability"  # default tab
+    provider = "flux"  # default tab
     style = ""              # optional future use
 
     if request.method == "POST":
