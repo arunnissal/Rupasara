@@ -80,59 +80,146 @@ def favorites(request):
     return render(request, 'gallery/favorites.html')
 
 
+def _generate_with_stability(prompt: str):
+    """
+    Call Stability AI image API.
+    Returns (image_data_uri, error_message).
+    """
+    api_key = getattr(settings, "STABILITY_API_KEY", None)
+    if not api_key:
+        return None, "Stability AI key not configured. Add STABILITY_API_KEY in settings."
+
+    # Example demo endpoint – adjust if Stability docs suggest a different free endpoint
+    url = "https://api.stability.ai/v2beta/demo/generate/stable-diffusion-xl"
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+    }
+
+    files = {
+        "prompt": (None, prompt),
+        "output_format": (None, "png"),
+    }
+
+    try:
+        resp = requests.post(url, headers=headers, files=files, timeout=60)
+
+        if resp.status_code == 200:
+            import base64
+            b64 = base64.b64encode(resp.content).decode("utf-8")
+            return f"data:image/png;base64,{b64}", None
+
+        # Special handling for quota/credits issues
+        if resp.status_code == 402:
+            return None, "Stability AI: payment/credits required (status 402). Free quota may be exhausted."
+
+        # Try parse JSON error if any
+        try:
+            data = resp.json()
+            detail = data.get("message") or data.get("error") or ""
+        except Exception:
+            detail = ""
+
+        return None, f"Stability AI error (status {resp.status_code}). {detail}".strip()
+
+    except requests.RequestException:
+        return None, "Unable to reach Stability AI. Please try again."
+
+
+def _generate_with_flux(prompt: str):
+    api_key = getattr(settings, "FLUX_API_KEY", "866e8146-3720-40bb-b95d-a4b4f8e97d0b")
+    api_url = getattr(settings, "FLUX_API_URL", "https://api.bfl.ml/v1/image")
+
+    if not api_url:
+        return None, "FLUX API URL not configured. Set FLUX_API_URL in settings/environment."
+
+    if not api_key:
+        return None, "FLUX API key not configured. Set FLUX_API_KEY in settings/environment."
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    body = {
+        "prompt": prompt,
+        # "model": "flux-schnell",   # or whatever model id docs say
+        # other params from docs…
+    }
+
+    try:
+        resp = requests.post(api_url, headers=headers, json=body, timeout=60)
+
+        if resp.status_code == 200:
+            import base64
+            try:
+                # case 1: raw bytes
+                b64 = base64.b64encode(resp.content).decode("utf-8")
+                return f"data:image/png;base64,{b64}", None
+            except Exception:
+                pass
+
+            try:
+                # case 2: JSON with base64 field
+                data = resp.json()
+                b64 = (
+                    data.get("image_base64")
+                    or data.get("image")
+                    or data.get("data")
+                )
+                if b64:
+                    return f"data:image/png;base64,{b64}", None
+            except Exception:
+                pass
+
+            return None, "FLUX API returned success but response format is not handled. Adjust parsing in _generate_with_flux()."
+
+        try:
+            data = resp.json()
+            detail = data.get("message") or data.get("error") or ""
+        except Exception:
+            detail = ""
+
+        return None, f"FLUX API error (status {resp.status_code}). {detail}".strip()
+
+    except requests.RequestException:
+        return None, "Unable to reach FLUX image service. Please try again."
+
 def ai_studio(request):
+    """
+    AI Studio page.
+    - GET: show prompt form
+    - POST: send prompt to selected provider and display result
+    """
     generated_image_data = None
     error_message = None
     prompt = ""
+    provider = "stability"  # default tab
+    style = ""              # optional future use
 
     if request.method == "POST":
         prompt = (request.POST.get("prompt") or "").strip()
-        api_key = getattr(settings, "STABILITY_API_KEY", None)
+        provider = request.POST.get("provider") or "stability"
+        style = (request.POST.get("style") or "").strip()
 
         if not prompt:
             error_message = "Please enter a prompt."
-        elif not api_key:
-            error_message = "AI API key not configured. Add STABILITY_API_KEY in settings.py."
         else:
-            # ⚠️ Check Stability docs for the latest endpoint & params.
-            # This uses the v2beta core generation endpoint as example.
-            url = "https://api.stability.ai/v2beta/stable-image/generate/core"
+            # Optionally combine style text into prompt:
+            # if style and style.lower() not in prompt.lower():
+            #     prompt = f"{prompt}, {style}"
 
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Accept": "image/*",
-            }
-
-            # Multipart/form-data fields
-            files = {
-                "prompt": (None, prompt),
-                "output_format": (None, "png"),
-                # Optional: uncomment / adjust based on Stability docs:
-                # "aspect_ratio": (None, "1:1"),
-                # "mode": (None, "text-to-image"),
-            }
-
-            try:
-                resp = requests.post(url, headers=headers, files=files, timeout=60)
-
-                if resp.status_code == 200:
-                    # resp.content = raw PNG bytes
-                    b64 = base64.b64encode(resp.content).decode("utf-8")
-                    generated_image_data = f"data:image/png;base64,{b64}"
-                else:
-                    # Try to parse JSON error if available
-                    try:
-                        data = resp.json()
-                        detail = data.get("message") or data.get("error") or ""
-                    except Exception:
-                        detail = ""
-                    error_message = f"AI API error (status {resp.status_code}). {detail}"
-            except requests.RequestException:
-                error_message = "Unable to reach the AI image service. Please try again."
+            if provider == "flux":
+                generated_image_data, error_message = _generate_with_flux(prompt)
+            else:
+                provider = "stability"  # normalize
+                generated_image_data, error_message = _generate_with_stability(prompt)
 
     context = {
         "prompt": prompt,
         "generated_image_data": generated_image_data,
         "error_message": error_message,
+        "provider": provider,
+        "style": style,
     }
     return render(request, "gallery/ai_studio.html", context)

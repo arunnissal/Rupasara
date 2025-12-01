@@ -126,3 +126,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "a9xrBjC2MDMndwcn2Sxr07Ix0v0xsEuGtREkIUd0GHXorrHYRP0kCBTa")
 STABILITY_API_KEY = os.environ.get("STABILITY_API_KEY", "sk-MxMqfZogG2vmq5gWxs8dMQoK4FGazoLH4c9niTb1UsByxVCQ")
+FLUX_API_KEY = os.environ.get("FLUX_API_KEY", "866e8146-3720-40bb-b95d-a4b4f8e97d0b")
+FLUX_API_URL = os.environ.get("FLUX_API_URL", "https://api.bfl.ml/v1/image")

@@ -722,3 +722,7 @@ body.light-theme .hint-text {
 body.light-theme .section-title {
     color: #374151;
 }
+.ai-provider-chip.chip-active {
+    border-color: #fb923c;
+    box-shadow: 0 0 0 1px rgba(251,146,60,0.5);
+}
