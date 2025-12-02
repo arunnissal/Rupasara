@@ -94,19 +94,25 @@ def ai_studio(request):
     error_message = None
 
     if request.method == "POST":
-        prompt = (request.POST.get("prompt") or "").strip()
-        api_key = settings.GEMINI_API_KEY
+        prompt = (request.POST.get("prompt") or "").trim() if hasattr(str, "trim") else (request.POST.get("prompt") or "").strip()
+        api_key = getattr(settings, "GEMINI_API_KEY", "AIzaSyBsIsLZ_zOwDVfhBqZzslVAYJT0TDfvyEw")
 
-        if not api_key:
-            error_message = "Gemini API key not configured."
+        if not prompt:
+            error_message = "Please enter a prompt."
+        elif not api_key:
+            error_message = "Gemini API key not configured in environment."
         else:
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={AIzaSyBsIsLZ_zOwDVfhBqZzslVAYJT0TDfvyEw}"
+            # Correct Gemini image endpoint (generateContent with responseMimeType=image/png)
+            base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
+            url = f"{base_url}?key={api_key}"
 
             payload = {
                 "contents": [
                     {
                         "role": "user",
-                        "parts": [{"text": prompt}]
+                        "parts": [
+                            {"text": prompt}
+                        ]
                     }
                 ],
                 "generationConfig": {
@@ -119,21 +125,24 @@ def ai_studio(request):
 
                 if resp.status_code == 200:
                     data = resp.json()
-
-                    # Extract base64 image
                     try:
+                        # candidates[0].content.parts[0].inline_data.data = base64 image
                         b64 = data["candidates"][0]["content"]["parts"][0]["inline_data"]["data"]
                         generated_image_data = f"data:image/png;base64,{b64}"
-                    except:
-                        error_message = "Gemini returned no image. Try different prompt."
+                    except Exception:
+                        error_message = "Gemini responded but no image was found. Try another prompt."
+                elif resp.status_code == 401:
+                    error_message = "Gemini: Unauthorized (check API key)."
+                elif resp.status_code == 429:
+                    error_message = "Gemini: Rate limit exceeded. Try again in a bit."
                 else:
                     error_message = f"Gemini error {resp.status_code}: {resp.text}"
 
             except Exception as e:
-                error_message = f"Error: {str(e)}"
+                error_message = f"Error talking to Gemini: {str(e)}"
 
     return render(request, "gallery/ai_studio.html", {
         "prompt": prompt,
         "generated_image_data": generated_image_data,
-        "error_message": error_message
+        "error_message": error_message,
     })
