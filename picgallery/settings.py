@@ -124,3 +124,4 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyBsIsLZ_zOwDVfhBqZzslVAYJT0TDfvyEw")

@@ -1,0 +1,62 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">✨ AI Image Generator</h1>
+
+<p class="search-info">
+    Type a prompt below and Gemini will generate an image.
+</p>
+
+<form method="post" class="ai-form" id="ai-form">
+    {% csrf_token %}
+    <textarea
+        name="prompt"
+        rows="3"
+        class="ai-textarea"
+        placeholder="Example: A futuristic lion king in neon cyberpunk style"
+    >{{ prompt }}</textarea>
+
+    <div class="ai-actions">
+        <button type="submit" class="btn btn-primary" id="ai-generate-btn">
+            <span class="btn-label">Generate</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+        <span id="ai-status-text" class="hint-text">Generating may take 3–10 seconds...</span>
+    </div>
+</form>
+
+{% if error_message %}
+<div class="alert alert-error" style="margin-top:15px;">
+    {{ error_message }}
+</div>
+{% endif %}
+
+{% if generated_image_data %}
+<div class="ai-result" style="margin-top:20px;">
+    <img src="{{ generated_image_data }}" class="ai-image">
+    <div class="ai-result-actions">
+        <a href="{{ generated_image_data }}" download="rupasara-ai.png" class="btn btn-primary btn-small">
+            Download
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("ai-form");
+    const btn = document.getElementById("ai-generate-btn");
+    const status = document.getElementById("ai-status-text");
+
+    form?.addEventListener("submit", () => {
+        btn.disabled = true;
+        status.textContent = "Generating image… please wait.";
+        form.classList.add("ai-form-busy");
+    });
+});
+</script>
+{% endblock %}

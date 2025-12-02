@@ -88,3 +88,42 @@ def favorites(request):
     Backend only serves the template.
     """
     return render(request, 'gallery/favorites.html')
+def ai_studio(request):
+    prompt = ""
+    generated_image_data = None
+    error_message = None
+
+    if request.method == "POST":
+        prompt = (request.POST.get("prompt") or "").strip()
+        api_key = settings.GEMINI_API_KEY
+
+        if not api_key:
+            error_message = "Gemini API key not configured."
+        else:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateImage?key={api_key}"
+            payload = {"prompt": prompt, "size": "1024x1024"}
+
+            try:
+                resp = requests.post(url, json=payload, timeout=80)
+
+                if resp.status_code == 200:
+                    data = resp.json()
+                    b64 = data.get("generatedImages", [{}])[0].get("image")
+                    if b64:
+                        generated_image_data = f"data:image/png;base64,{b64}"
+                    else:
+                        error_message = "No image returned."
+                elif resp.status_code == 401:
+                    error_message = "Invalid Gemini API key."
+                elif resp.status_code == 429:
+                    error_message = "Too many requests. Try later."
+                else:
+                    error_message = f"Gemini error {resp.status_code}: {resp.text}"
+            except Exception as e:
+                error_message = str(e)
+
+    return render(request, "gallery/ai_studio.html", {
+        "prompt": prompt,
+        "generated_image_data": generated_image_data,
+        "error_message": error_message,
+    })
