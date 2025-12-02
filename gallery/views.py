@@ -100,30 +100,40 @@ def ai_studio(request):
         if not api_key:
             error_message = "Gemini API key not configured."
         else:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateImage?key={api_key}"
-            payload = {"prompt": prompt, "size": "1024x1024"}
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={AIzaSyBsIsLZ_zOwDVfhBqZzslVAYJT0TDfvyEw}"
+
+            payload = {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": prompt}]
+                    }
+                ],
+                "generationConfig": {
+                    "responseMimeType": "image/png"
+                }
+            }
 
             try:
-                resp = requests.post(url, json=payload, timeout=80)
+                resp = requests.post(url, json=payload, timeout=90)
 
                 if resp.status_code == 200:
                     data = resp.json()
-                    b64 = data.get("generatedImages", [{}])[0].get("image")
-                    if b64:
+
+                    # Extract base64 image
+                    try:
+                        b64 = data["candidates"][0]["content"]["parts"][0]["inline_data"]["data"]
                         generated_image_data = f"data:image/png;base64,{b64}"
-                    else:
-                        error_message = "No image returned."
-                elif resp.status_code == 401:
-                    error_message = "Invalid Gemini API key."
-                elif resp.status_code == 429:
-                    error_message = "Too many requests. Try later."
+                    except:
+                        error_message = "Gemini returned no image. Try different prompt."
                 else:
                     error_message = f"Gemini error {resp.status_code}: {resp.text}"
+
             except Exception as e:
-                error_message = str(e)
+                error_message = f"Error: {str(e)}"
 
     return render(request, "gallery/ai_studio.html", {
         "prompt": prompt,
         "generated_image_data": generated_image_data,
-        "error_message": error_message,
+        "error_message": error_message
     })
