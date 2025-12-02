@@ -126,4 +126,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "a9xrBjC2MDMndwcn2Sxr07Ix0v0xsEuGtREkIUd0GHXorrHYRP0kCBTa")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyBsIsLZ_zOwDVfhBqZzslVAYJT0TDfvyEw")
