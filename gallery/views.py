@@ -31,7 +31,7 @@ def search_images(request):
     has_next = False
 
     if query:
-        api_key = getattr(settings, 'PEXELS_API_KEY', None)
+        api_key = getattr(settings, 'PEXELS_API_KEY', "a9xrBjC2MDMndwcn2Sxr07Ix0v0xsEuGtREkIUd0GHXorrHYRP0kCBTa")
 
         if not api_key:
             error_message = "Pexels API key not configured. Please add it in settings.py or environment."
