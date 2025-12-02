@@ -4,10 +4,6 @@ import requests
 
 
 def home(request):
-    """
-    Home page view.
-    Shows the brand and a search bar.
-    """
     return render(request, 'gallery/home.html')
 
 
@@ -83,9 +79,7 @@ def search_images(request):
 
 
 def favorites(request):
-    """
-    Favorites page – images are managed completely in localStorage.
-    Backend only serves the template.
-    """
     return render(request, 'gallery/favorites.html')
 
+def about(request):
+    return render(request, "gallery/about.html")

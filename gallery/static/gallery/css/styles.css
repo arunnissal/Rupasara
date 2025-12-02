@@ -726,3 +726,22 @@ body.light-theme .section-title {
     border-color: #fb923c;
     box-shadow: 0 0 0 1px rgba(251,146,60,0.5);
 }
+.body-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #e5e7eb;
+    margin-bottom: 8px;
+}
+
+.body-list {
+    padding-left: 20px;
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #e5e7eb;
+}
+
+body.light-theme .body-text,
+body.light-theme .body-list {
+    color: #374151;
+}

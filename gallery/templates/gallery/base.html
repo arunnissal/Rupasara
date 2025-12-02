@@ -34,8 +34,14 @@
     </div>
 
     <footer class="site-footer">
-        Rupasara – Explore the Visual Universe · A free image search experience
+        <p>
+            Rupasara – Explore the Visual Universe · A free image search experience
+            · <a href="{% url 'about' %}">About</a>
+            · Photos powered by
+            <a href="https://www.pexels.com/api/" target="_blank" rel="noopener">Pexels</a>
+        </p>
     </footer>
+
 
     <!-- Main JavaScript -->
     <script src="{% static 'gallery/js/main.js' %}"></script>

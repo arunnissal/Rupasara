@@ -1,0 +1,58 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">✨ About Rupasara</h1>
+
+<p class="search-info">
+    Rupasara is a free image search experience where you can explore,
+    view, and download beautiful photos from around the world.
+</p>
+
+<div class="section">
+    <p class="section-title">What is Rupasara?</p>
+    <p class="body-text">
+        Rupasara lets you search for high-quality stock images by keyword,
+        browse results with a clean, distraction-free interface, and save
+        your favorite photos locally in your browser.
+    </p>
+</div>
+
+<div class="section">
+    <p class="section-title">How it works</p>
+    <ul class="body-list">
+        <li>🔍 Search images using any keyword – like <em>sunset</em>, <em>mountains</em>, or <em>technology</em>.</li>
+        <li>📸 Results are fetched from the Pexels photo API.</li>
+        <li>❤️ Mark images as favorites – they are stored in your browser using localStorage.</li>
+        <li>⬇️ Download any image directly from the results or favorites page.</li>
+    </ul>
+</div>
+
+<div class="section">
+    <p class="section-title">Tech stack</p>
+    <ul class="body-list">
+        <li>⚙️ <strong>Backend:</strong> Django (Python)</li>
+        <li>🎨 <strong>Frontend:</strong> HTML, CSS, vanilla JavaScript</li>
+        <li>🖼 <strong>Images:</strong> Pexels API for stock photos</li>
+        <li>☁️ <strong>Deployment:</strong> Render.com</li>
+    </ul>
+</div>
+
+<div class="section">
+    <p class="section-title">Credits & attribution</p>
+    <p class="body-text">
+        Image search results and downloads are powered by the
+        <a href="https://www.pexels.com/api/" target="_blank" rel="noopener">Pexels API</a>.
+        Please check the original photographer page on Pexels for license details.
+    </p>
+</div>
+
+<div class="section">
+    <p class="section-title">About the developer</p>
+    <p class="body-text">
+        Rupasara was designed and built by <strong>Arun</strong> as a personal project –
+        focusing on a smooth UI, clean UX, and a simple way to explore visual content.
+    </p>
+</div>
+
+{% endblock %}
