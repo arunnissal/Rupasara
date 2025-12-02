@@ -17,7 +17,6 @@
         <a href="{% url 'home' %}" class="brand">RUPASARA</a>
 
         <div class="header-actions">
-            <a href="{% url 'ai_studio' %}" class="chip-small ai-link">✨ AI Studio</a>
             <a href="{% url 'favorites' %}" class="chip-small fav-link">❤️ Favorites</a>
             <button id="theme-toggle" class="theme-toggle" type="button">
                 🌙
@@ -25,6 +24,8 @@
         </div>
     </div>
 </header>
+
+
 
 <div class="container">
     {% block content %}{% endblock %}
